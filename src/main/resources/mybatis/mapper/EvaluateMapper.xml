@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.novel.mapper.EvaluateMapper">
+    <resultMap id="evaluate" type="EvaluateBean">
+        <result property="e_id" column="e_id"/>
+        <result property="e_content" column="e_content"/>
+        <result property="e_time" column="e_time"/>
+        <result property="u_id" column="u_id"/>
+        <result property="n_id" column="n_id"/>
+    </resultMap>
+
+    <!--根据jwt从而知道谁增加的评论-->
+    <insert id="insertEvaluate" parameterType="EvaluateBean">
+        insert into evaluate value (#{e_id},#{e_content},#{e_time},#{u_id},#{n_id})
+    </insert>
+
+    <!--删除评论-->
+    <delete id="deleteEvaluate" parameterType="EvaluateBean">
+        delete from evaluate where e_id=#{e_id}
+    </delete>
+
+
+    <!--通过小说id查询该小说的所有评论-->
+    <select id="selectAllEvaluateNovelId" resultType="map" parameterType="EvaluateBean">
+        SELECT	evaluate.`e_content`,evaluate.`e_time`,user.`name`,user .`img`
+        FROM evaluate
+        JOIN USER ON user.`id`=evaluate.`u_id`
+        WHERE evaluate.`n_id`=#{n_id}
+    </select>
+</mapper>

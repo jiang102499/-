@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.novel.mapper.BookeShelfMapper">
+    <resultMap id="bookShelf" type="BookShelfBean">
+        <result property="b_id" column="b_id"/>
+        <result property="u_id" column="u_id"/>
+    </resultMap>
+
+    <resultMap id="centre" type="CentreBookShelfBean">
+        <result property="cen_id" column="cen_id"/>
+        <result property="b_id" column="b_id"/>
+        <result property="n_id" column="n_id"/>
+    </resultMap>
+
+    <resultMap id="centreBookShelfBeanDto" type="NovelBean">
+        <result property="n_id" column="n_id"/>
+        <result property="n_name" column="n_name"/>
+        <result property="lable" column="lable"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="score" column="score"/>
+        <result property="state" column="state"/>
+        <result property="n_img" column="n_img"/>
+        <collection property="categoryBean" ofType="CateGoryBean">
+            <result property="cg_id" column="cg_id"/>
+            <result property="cg_name" column="cg_name"/>
+        </collection>
+        <collection property="writerBean" ofType="WriterBean">
+            <result property="w_id" column="w_id"/>
+            <result property="w_name" column="w_name"/>
+            <result property="w_phone" column="w_phone"/>
+            <result property="start_time" column="start_time"/>
+            <result property="end_time" column="end_time"/>
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="novelusercentre" type="NovelUserCentreBean">
+        <result property="nu_id" column="nu_id"/>
+        <result property="read_time" column="read_time"/>
+        <collection property="userBean" ofType="UserBean">
+            <result property="id" column="id"/>
+            <result property="img" column="img"/>
+            <result property="name" column="name"/>
+            <result property="password" column="password"/>
+            <result property="sex" column="sex"/>
+            <result property="balance" column="balance"/>
+            <result property="limits" column="limits"/>
+        </collection>
+        <collection property="novelBean" ofType="NovelBean">
+            <result property="n_id" column="n_id"/>
+            <result property="n_name" column="n_name"/>
+            <result property="lable" column="lable"/>
+            <result property="synopsis" column="synopsis"/>
+            <result property="score" column="score"/>
+            <result property="state" column="state"/>
+            <result property="n_img" column="n_img"/>
+            <collection property="categoryBean" ofType="CateGoryBean">
+                <result property="cg_id" column="cg_id"/>
+                <result property="cg_name" column="cg_name"/>
+            </collection>
+            <collection property="writerBean" ofType="WriterBean">
+                <result property="w_id" column="w_id"/>
+                <result property="w_name" column="w_name"/>
+                <result property="w_phone" column="w_phone"/>
+                <result property="start_time" column="start_time"/>
+                <result property="end_time" column="end_time"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--查询该用户是否拥有书架-->
+    <select id="selectHaveBookShelf" resultMap="bookShelf">
+        select b_id from bookshelf where u_id=#{id};
+    </select>
+
+    <!--创建书架-->
+    <insert id="creatBookShelf" parameterType="BookShelfBean">
+        INSERT INTO bookshelf(u_id) VALUE(#{id});
+    </insert>
+    <!--收藏小说-->
+    <insert id="collectNovel" parameterType="CentreBookShelfBean">
+        insert into centrebookshelf(b_id,n_id) values (#{b_id},#{n_id});
+    </insert>
+    <!--根据书架id查询收藏的小说-->
+    <select id="selectCollectNovel" resultMap="centreBookShelfBeanDto">
+        SELECT centrebookshelf.`b_id` ,centrebookshelf.`n_id`, novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,
+    novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+    FROM novel
+    JOIN centrebookshelf ON centrebookshelf.`n_id`=novel.`n_id`
+    JOIN category ON category.`cg_id`=novel.`category_id`
+    JOIN writer ON writer.`w_id` =novel.`w_id`
+    WHERE centrebookshelf.`b_id`=#{b_id}
+    </select>
+    <!--删除收藏的小说-->
+    <delete id="deleteCollectNovel" parameterType="CentreBookShelfBean">
+        delete from centrebookshelf where b_id=#{b_id} and  n_id=#{n_id}
+    </delete>
+    <!--查看该用户的阅读历史-->
+    <select id="readHistory" resultMap="novelusercentre">
+        SELECT novelusercentre.`nu_id`,novelusercentre.`u_id`,user.`name`,novel.`n_id`,novel.`n_name`,novel.`lable`,novel.`score`,novel.`synopsis`,novel.`n_img`,novelusercentre.`read_time`,writer.`w_name`
+            FROM novelusercentre
+            JOIN USER ON novelusercentre.`u_id`=user.`id`
+            JOIN novel ON novelusercentre.`n_id`=novel.`n_id`
+            JOIN writer ON writer.`w_id`=novel.`w_id`
+            WHERE novelusercentre.`u_id`=#{u_id}
+               ORDER BY novelusercentre.`read_time` DESC
+    </select>
+
+
+</mapper>

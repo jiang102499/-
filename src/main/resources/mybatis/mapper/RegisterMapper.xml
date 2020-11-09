@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.novel.mapper.RegisterMapper">
+    <resultMap id="User" type="UserBean">
+        <result property="id" column="id"/>
+        <result property="img" column="img"/>
+        <result property="name" column="name"/>
+        <result property="password" column="password"/>
+        <result property="sex" column="sex"/>
+        <result property="balance" column="balance"/>
+        <result property="limits" column="limits"/>
+    </resultMap>
+
+    <!--注册-->
+    <insert id="register" parameterType="UserBean">
+        insert into user (id,img,name,password,sex,balance,limits) value (#{id},"/pic/ren.png",#{name},#{password},1,'0','user');
+    </insert>
+
+    <!--查询该用户是否注册过-->
+    <select id="selectAlready" resultType="int" parameterType="UserBean">
+        select count(*) from user where name=#{name};
+    </select>
+
+</mapper>

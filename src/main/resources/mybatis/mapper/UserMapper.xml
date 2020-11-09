@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.novel.mapper.UserMapper">
+    <resultMap id="User" type="UserBean">
+        <result property="id" column="id"/>
+        <result property="img" column="img"/>
+        <result property="name" column="name"/>
+        <result property="password" column="password"/>
+        <result property="sex" column="sex"/>
+        <result property="balance" column="balance"/>
+        <result property="limits" column="limits"/>
+    </resultMap>
+
+    <!--登录-->
+    <select id="loginUser" resultMap="User">
+        select * from user where name=#{name} AND  password=#{password};
+    </select>
+
+    <!--修改-->
+    <update id="update" parameterType="UserBean">
+        update user
+        <set>
+            <if test="name!=null">
+                name =#{name},
+            </if>
+            <if test="password!=null">
+                password=#{password},
+            </if>
+            <if test="img!=null">
+                img=#{img},
+            </if>
+            <if test="sex!=null">
+                sex=#{sex},
+            </if>
+            <if test="balance!=null">
+                balance=#{balance},
+            </if>
+            <if test="limits!=null">
+                limits=#{limits},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--查询用户信息-->
+    <select id="selectUser" resultMap="User">
+        select * from user where id=#{id};
+    </select>
+</mapper>

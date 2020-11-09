@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/novel?serverTimezone=UTC&characterEncoding=UTF-8&userUnicode=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  #映射xml文件
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  #别名
+  type-aliases-package: com.example.novel.bean
+  #开启驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

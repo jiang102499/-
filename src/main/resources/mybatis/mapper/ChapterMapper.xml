@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.novel.mapper.ChapterMapper">
+
+    <resultMap id="chapter" type="ChapterBean">
+        <result property="c_id" column="c_id"/>
+        <result property="c_name" column="c_name"/>
+        <result property="cn_id" column="cn_id"></result>
+        <result property="c_content" column="c_content"/>
+        <result property="n_id" column="n_id"/>
+    </resultMap>
+
+
+    <!--添加章节-->
+    <insert id="insertChapter" parameterType="ChapterBean">
+        insert into chapter value (#{c_Id},#{c_name},#{cn_id},#{c_content},#{n_id})
+    </insert>
+
+
+    <!--根据小说id查询该小说的所有目录以及内容-->
+    <select id="selectAllChapterNovelId" resultType="map" parameterType="ChapterBean">
+        SELECT novel.`n_id`,novel.`n_name`,chapter.`c_name`,chapter.`c_content`,chapter.`cn_id`
+        FROM chapter
+        JOIN novel ON novel.`n_id`=chapter.`n_id`
+        WHERE chapter.`n_id`=#{n_id}
+    </select>
+
+
+    <select id="selectChapterNovelId" resultMap="chapter">
+        SELECT  novel.`n_id`,novel.`n_name`,chapter.`cn_id`,chapter.`c_name`,chapter.`c_content`
+        FROM chapter
+        JOIN novel ON novel.`n_id`=chapter.`n_id`
+        WHERE chapter.`n_id`=#{n_id} AND chapter.`cn_id`=#{cn_id}
+    </select>
+
+    <select id="selectCountChapterNovel" resultType="int">
+        SELECT COUNT(cn_id) FROM chapter WHERE n_id=#{n_id}
+    </select>
+</mapper>

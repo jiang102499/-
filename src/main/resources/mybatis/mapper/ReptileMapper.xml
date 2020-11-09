@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.novel.mapper.ReptileMapper">
+
+    <insert id="parseBidding" parameterType="ChapterBean">
+        INSERT INTO chapter VALUE (#{c_id},'第一章',#{c_content},1)
+    </insert>
+</mapper>

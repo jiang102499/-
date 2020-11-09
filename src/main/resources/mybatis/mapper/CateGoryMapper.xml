@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.novel.mapper.CateGoryMapper">
+    <resultMap id="categroy" type="NovelBean">
+        <result property="n_id" column="n_id"/>
+        <result property="n_name" column="n_name"/>
+        <result property="lable" column="lable"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="score" column="score"/>
+        <result property="state" column="state"/>
+        <result property="n_img" column="n_img"/>
+        <collection property="categoryBean" ofType="CateGoryBean">
+            <result property="cg_name" column="cg_name"/>
+        </collection>
+        <collection property="writerBean" ofType="WriterBean">
+            <result property="w_name" column="w_name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="categorymessage" type="CateGoryBean">
+        <result property="cg_id" column="cg_id"/>
+        <result property="cg_name" column="cg_name"/>
+    </resultMap>
+
+    <resultMap id="category2" type="com.example.novel.bean.dto.CategoryBeanDto">
+        <result property="cg_id" column="cg_id"/>
+        <result property="cg_name" column="cg_name"/>
+        <collection property="novelBean" ofType="NovelBean">
+            <result property="n_id" column="n_id"/>
+            <result property="n_name" column="n_name"/>
+            <result property="lable" column="lable"/>
+            <result property="synopsis" column="synopsis"/>
+            <result property="score" column="score"/>
+            <result property="state" column="state"/>
+            <result property="n_img" column="n_img"/>
+            <collection property="categoryBean" ofType="CateGoryBean">
+                <result property="cg_id" column="cg_id"/>
+                <result property="cg_name" column="cg_name"/>
+            </collection>
+            <collection property="writerBean" ofType="WriterBean">
+                <result property="w_id" column="w_id"/>
+                <result property="w_name" column="w_name"/>
+                <result property="w_phone" column="w_phone"/>
+                <result property="start_time" column="start_time"/>
+                <result property="end_time" column="end_time"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--查询分类的所有小说-->
+    <select id="selectCategory" resultMap="category2">
+        SELECT category.`cg_id`, novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,novel.`lable`,novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+        FROM novel
+        JOIN writer ON writer.`w_id`=novel.`w_id`
+        JOIN category ON category.`cg_id`=novel.`category_id`
+        WHERE category.`cg_id`=1 or category.`cg_id`=2 or category.`cg_id`=3 or category.`cg_id`=4 or category.`cg_id`=5 or category.`cg_id`=6
+    </select>
+
+    <!--查询分类的所有小说2-->
+    <select id="selectCategoryById" resultMap="categroy">
+        SELECT category.`cg_id`, novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,novel.`lable`,novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+        FROM novel
+        JOIN writer ON writer.`w_id`=novel.`w_id`
+        JOIN category ON category.`cg_id`=novel.`category_id`
+        WHERE category.`cg_id`= #{cg_id}
+    </select>
+
+    <!--增加分类类别-->
+    <insert id="insertCategory" parameterType="CategoryBean">
+        insert into category(cg_name) value (#{cg_name})
+    </insert>
+
+
+    <!--通过cg_id查询到该信息的属性，再来修改-->
+    <select id="selectupdate" resultMap="categorymessage">
+        select * from category where cg_id=#{cg_id};
+    </select>
+
+    <!--修改类别-->
+    <update id="updateCategory" parameterType="CategoryBean">
+        update category
+        <set>
+            <if test="cg_name!=null">
+                cg_name=#{cg_name}
+            </if>
+        </set>
+        where cg_id=#{cg_id}
+    </update>
+
+    <!--删除分类类别-->
+    <delete id="deleteCategory" parameterType="CategoryBean">
+        delete from category where cg_id=#{cg_id}
+    </delete>
+
+
+    <!--查询状态已完成的小说-->
+    <select id="selectEnd" resultMap="categroy">
+        SELECT novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,novel.`lable`,novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+        FROM novel
+        JOIN writer ON writer.`w_id`=novel.`w_id`
+        JOIN category ON category.`cg_id`=novel.`category_id`
+        WHERE novel.`state`=2
+    </select>
+
+    <!--查询状态未完成的小说-->
+    <select id="selectUnEnd" resultMap="categroy">
+        SELECT novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,novel.`lable`,novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+        FROM novel
+        JOIN writer ON writer.`w_id`=novel.`w_id`
+        JOIN category ON category.`cg_id`=novel.`category_id`
+        WHERE novel.`state`=1
+    </select>
+
+    <!--排行-->
+    <select id="Ranking" resultMap="categroy">
+    SELECT novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,novel.`lable`,novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+        FROM novel
+        JOIN writer ON writer.`w_id`=novel.`w_id`
+        JOIN category ON category.`cg_id`=novel.`category_id`
+        ORDER BY novel.`score` DESC
+    </select>
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.novel.mapper.NovelMapper">
+    <resultMap id="novel" type="NovelBean">
+        <result property="n_id" column="n_id"/>
+        <result property="n_name" column="n_name"/>
+        <result property="lable" column="lable"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="score" column="score"/>
+        <result property="state" column="state"/>
+        <result property="n_img" column="n_img"/>
+        <collection property="categoryBean" ofType="CateGoryBean">
+            <result property="cg_id" column="cg_id"/>
+            <result property="cg_name" column="cg_name"/>
+        </collection>
+        <collection property="writerBean" ofType="WriterBean">
+            <result property="w_id" column="w_id"/>
+            <result property="w_name" column="w_name"/>
+            <result property="w_phone" column="w_phone"/>
+            <result property="start_time" column="start_time"/>
+            <result property="end_time" column="end_time"/>
+        </collection>
+    </resultMap>
+
+    <!--查询所有小说-->
+    <select id="selectAllNovel" resultMap="novel">
+        SELECT novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,novel.`lable`,novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+        FROM novel
+        JOIN category ON category.`cg_id`=novel.`category_id`
+        JOIN writer ON writer.`w_id`=novel.`w_id`
+    </select>
+
+    <!--增加小说-->
+    <insert id="insertNovel" parameterType="com.example.novel.bean.dto.NovelBeanDto">
+        insert into novel value (#{n_id},#{n_name},#{category_id},#{w_id},
+        #{lable},#{synopsis},#{score},#{state},#{n_img})
+    </insert>
+
+    <!--通过小说id获取该小说的所有信息-->
+    <select id="selectAllNovelId" resultMap="novel">
+        SELECT novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,novel.`lable`,novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+        FROM novel
+        JOIN category ON category.`cg_id`=novel.`category_id`
+        JOIN writer ON writer.`w_id`=novel.`w_id`
+        where n_id=#{n_id}
+    </select>
+
+
+    <!--修改小说-->
+    <update id="updateNovel" parameterType="NovelBeanDto">
+        update novel
+        <set>
+            <if test="n_name!=null">
+                n_id=#{n_id},
+            </if>
+            <if test="category_id>0">
+                category_id=#{category_id},
+            </if>
+            <if test="w_id>0">
+                w_id=#{w_id},
+            </if>
+            <if test="lable!=null">
+                lable=#{lable},
+            </if>
+            <if test="synopsis!=null">
+                synopsis=#{synopsis},
+            </if>
+            <if test="score>0">
+                score=#{score},
+            </if>
+            <if test="state>0">
+                state=#{state},
+            </if>
+            <if test="n_img!=null">
+                n_img=#{n_img}
+            </if>
+            where n_id=#{n_id};
+        </set>
+    </update>
+
+    <!--根据小说id删除小说-->
+    <delete id="deleteNovel" parameterType="NovelBean">
+        delete from novel where n_id=#{n_id}
+    </delete>
+
+
+    <!--根据作者id查询属于改作者的所有小说-->
+    <select id="selectNovelWriterId" resultMap="novel" parameterType="int">
+        SELECT novel.`n_id`,novel.`n_name`,category.`cg_name`,writer.`w_name`,novel.`lable`,novel.`synopsis`,novel.`score`,novel.`state`,novel.`n_img`
+        FROM novel
+        JOIN category ON category.`cg_id`=novel.`category_id`
+        JOIN writer ON writer.`w_id`=novel.`w_id`
+        where novel.w_id=#{w_id}
+    </select>
+</mapper>
